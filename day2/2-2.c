@@ -18,53 +18,60 @@ int get_sign(int x) {
 }
 
 int report_safe(int* array, int size) {
-    int sign = 0;
-    int removedIndex = -1;
-    for (int i = 1; i < size; i++) {
-        int val1;
-        if (i == removedIndex && i + 1 < size) {
-            val1 = array[i+1];
-        } else if (i == removedIndex && i + 1 >= size) {
-            break; // end of list. probably safe.
+    for (int ri = -1; ri < size; ri++) { //-1 is whole array without removal.
+        if (ri == -1) {
+            printf("Checking whole array.\n");
         } else {
-            val1 = array[i];
+            printf("Checking as if %d at index %d was bad value.\n",
+                   array[ri], ri);
         }
-        int val2 = removedIndex != i-1 ? array[i-1] : array[i-2];
-        int distance = val1 - val2;
-        if (sign == 0) {
-            sign = get_sign(distance);
-        }
-        printf("val %d and %d have dist of %d. sign = %d\n",
-               val1, val2, distance, sign);
-        // do "safety checks"
-        if (abs(distance) < 1 || abs(distance) > 3) {
-            printf("Distance <1 or >3, unsafe!\n");
-            // unsafe
-            if (removedIndex == -1) {
-                removedIndex = i;
-                printf("Removing %d at index %d\n", array[i], i);
-                // we will now reset the evaluation, skipping over the bad value.
-                i = 0;
-                sign = 0;
+        int sign = 0;
+        int good = 1;
+        for (int i = 1; i < size; i++) {
+            int val1;
+            int val2;
+            if (i == ri && ri + 1 < size) {
+                val1 = array[i+1];
+            } else if (i == ri && ri + 1 >= size) {
+                // removed one was the last one.
+                break;
+            } else {
+                val1 = array[i];
+            }
+            if (i - 1 == ri && ri == 0) {
+                // removed one was the first one. skip this one.
                 continue;
+            } else if (i - 1 == ri) {
+                val2 = array[i-2];
             } else {
-                return 0; // unsafe even after removing level
+                val2 = array[i-1];
+            }
+            int distance = val1 - val2;
+            if (sign == 0) {
+                sign = get_sign(distance);
+            }
+            printf("val %d and %d have dist of %d. sign = %d\n",
+                   val1, val2, distance, sign);
+            // do "safety checks"
+            if (abs(distance) < 1 || abs(distance) > 3) {
+                printf("Distance <1 or >3, unsafe!\n");
+                good = 0; // unsafe
+                break;
+            }
+            if (get_sign(distance) != sign) {
+                printf("distance sign does not match! unsafe.\n");
+                good = 0; // unsafe
+                break;
             }
         }
-        if (get_sign(distance) != sign) {
-            printf("distance sign does not match! unsafe.\n");
-            if (removedIndex == -1) {
-                removedIndex = i;
-                printf("Removing %d at index %d\n", array[i], i);
-                i = 0;
-                sign = 0;
-            } else {
-                return 0; // unsafe even after removing level
-            }
+        if (good) {
+            printf("This array is safe.\n");
+            return 1;
         }
+        // else continue.
     }
-    printf("This array is safe\n");
-    return 1;
+    printf("This array is unsafe.\n");
+    return 0; // no safe ones were found.
 }
 
 

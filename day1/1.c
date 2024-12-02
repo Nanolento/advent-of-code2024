@@ -39,7 +39,7 @@ int main() {
             }
             int *new_array1 = realloc(array1, capacity * sizeof(int));
             int *new_array2 = realloc(array2, capacity * sizeof(int));
-            if (new_array1 == NULL | new_array2 == NULL) {
+            if (new_array1 == NULL || new_array2 == NULL) {
                 printf("Failed to allocate more memory to expand array.\n");
                 return 1;
             }

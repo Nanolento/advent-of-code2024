@@ -12,6 +12,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+
+int check_str_only_digits(char num_str[], int length) {
+    for (int i = 0; i < length; i++) {
+        if (!isdigit(num_str[i])) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
 
 int main() {
     char* command_string = malloc(sizeof(char) * 1024);
@@ -48,12 +59,15 @@ int main() {
         }
         int length = delim - current;
         if (length >= 4) {
-            current = delim;
             continue; //continue searching since this was garbage, too many nums
         }
         char num_str[length + 1];
         memcpy(num_str, current, length);
         num_str[length] = '\0';
+        if (!check_str_only_digits(num_str, length)) {
+            // invalid string
+            continue;
+        }
         int num = atoi(num_str);
         printf("%d*", num);
         nums[0] = num;
@@ -72,13 +86,19 @@ int main() {
         memcpy(num_str2, current, length);
         num_str2[length] = '\0';
         //printf("[%s|%d]", num_str2, length);
+        if (!check_str_only_digits(num_str2, length)) {
+            // invalid string
+            continue;
+        }
         num = atoi(num_str2);
         printf("%d ", num);
+        sprintf(num_str2, "%d", num);
+        
         nums[1] = num;
         current = end + 1;
         sum += (nums[0] * nums[1]);
     }
-    printf("\nSum: %d", sum);
+    printf("\nSum: %d\n", sum);
     free(command_string);
     return 0;
 }

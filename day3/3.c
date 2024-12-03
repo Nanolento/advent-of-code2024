@@ -101,7 +101,6 @@ int main() {
         char num_str2[length + 1];
         memcpy(num_str2, current, length);
         num_str2[length] = '\0';
-        //printf("[%s|%d]", num_str2, length);
         if (!check_str_only_digits(num_str2, length)) {
             // invalid string
             continue;

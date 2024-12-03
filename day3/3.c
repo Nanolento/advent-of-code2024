@@ -46,10 +46,26 @@ int main() {
     char* current = command_string;
     int nums[2];
     int sum = 0;
+    int allow_mul = 1;
     while (current) {
+        if (!allow_mul) {
+            char* next_enablement = strstr(current, "do()");
+            if (!next_enablement) {
+                // never gets re-enabled so quit
+                break;
+            }
+            current = next_enablement + 4;
+            allow_mul = 1;
+        }
+        char* next_disablement = strstr(current, "don't()");
         char* next = strstr(current, "mul(");
         if (!next) {
             break;
+        }
+        if (next_disablement && next > next_disablement) {
+            allow_mul = 0;
+            current = next_disablement + 7;
+            continue;
         }
         current = next + 4;
         char* delim = strchr(current, ',');
